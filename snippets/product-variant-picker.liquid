@@ -41,11 +41,13 @@
                 name="options[{{ option.name | escape }}]"
                 form="{{ product_form_id }}"
               >
+                <option value="" selected="selected">Unselected</option>
                 {%- render 'product-variant-options',
                   product: product,
                   option: option,
                   block: block,
-                  type: options_type
+                  type: options_type,
+                  mod_selectable: 'disable'
                 -%}
               </select>
               {% render 'icon-caret' %}
