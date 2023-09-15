@@ -26,7 +26,7 @@
           <legend class="form__label">{{ option.name }}</legend>
           {%- liquid
             assign options_type = block.settings.picker_type
-            assign option_name = optiion.name | handleize
+            assign option_name = option.name | handleize
             echo option_name
             if option_name != 'color'
               assign options_type = 'dropdown'
