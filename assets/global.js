@@ -1214,7 +1214,14 @@ class VariantRadios extends VariantSelects {
     this.options = fieldsets.map((element) => {
       console.log('element -->')
       console.log(element.tagName)
-      return Array.from(element.querySelectorAll('input')).find((radio) => radio.checked).value;
+      switch (element.tagName) {
+        case 'FIELDSET':
+          return Array.from(element.querySelectorAll('input')).find((radio) => radio.checked).value;
+          break;
+        case 'SELECT':
+          return element.value;
+          break;
+      }
     });
 
     console.log('this.options -->')
