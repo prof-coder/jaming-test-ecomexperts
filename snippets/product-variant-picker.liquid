@@ -24,7 +24,14 @@
       {%- for option in product.options_with_values -%}
         <fieldset class="js product-form__input">
           <legend class="form__label">{{ option.name }}</legend>
-          {%- render 'product-variant-options', product: product, option: option, block: block, type: block.settings.picker_type -%}
+          {%- liquid
+            assign options_type = block.settings.picker_type
+            assign option_name = optiion.name | handleize
+            if option_name != 'color'
+              assign options_type = 'dropdown'
+            endif
+            render 'product-variant-options', product: product, option: option, block: block, type: options_type
+          -%}
         </fieldset>
       {%- endfor -%}
       <script type="application/json">
