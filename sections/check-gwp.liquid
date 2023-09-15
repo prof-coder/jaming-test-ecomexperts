@@ -1,0 +1,48 @@
+{%- liquid
+  assign gwp_settings_handle = 'gwp-setting-s8zqgy0a'
+  assign gwp_settings = shop.metaobjects.gwp_setting[gwp_settings_handle]
+
+  assign gwp_product = gwp_settings.gwp_product.value
+  assign gwp_variant_id = gwp_product.selected_or_first_available_variant.id
+  assign condition_variant_str = ''
+  for condition_variant in gwp_settings.condition_variant.value
+    assign condition_variant_str = condition_variant_str | append: '|' | append: condition_variant.id
+  endfor
+
+  assign is_gwp_in_cart = false
+  assign gwp_quantity = 0
+  assign is_valid_gwp = false
+  for item in cart.items
+    if condition_variant_str contains item.variant.id
+      assign is_valid_gwp = true
+    endif
+
+    if gwp_variant_id == item.variant.id
+      assign is_gwp_in_cart = true
+      assign gwp_quantity = item.quantity
+    endif
+  endfor
+
+  assign adjust_mode = 'none'
+  if is_valid_gwp
+    if is_gwp_in_cart
+      if gwp_quantity > 1
+        assign adjust_mode = 'update'
+      endif
+    else
+      assign adjust_mode = 'add'
+    endif
+  elsif is_gwp_in_cart
+    assign adjust_mode = 'remove'
+  endif
+-%}
+{
+  "mode": {{ adjust_mode | json }},
+  "id": {{ gwp_variant_id | json }}
+}
+{% schema %}
+{
+  "name": "Check GWP",
+  "class": "js-check-gwp"
+}
+{% endschema %}

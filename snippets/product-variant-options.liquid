@@ -19,6 +19,7 @@
   assign variants_option1_arr = product.variants | map: 'option1'
   assign variants_option2_arr = product.variants | map: 'option2'
   assign variants_option3_arr = product.variants | map: 'option3'
+  assign selectable = mod_selectable | default: 'true'
 
   assign product_form_id = 'product-form-' | append: section.id
 -%}
@@ -45,7 +46,7 @@
     endfor
   -%}
 
-  {%- if block.settings.picker_type == 'button' -%}
+  {%- if type == 'button' -%}
     <input
       type="radio"
       id="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}"
@@ -63,10 +64,10 @@
       {{ value -}}
       <span class="visually-hidden">{{ 'products.product.variant_sold_out_or_unavailable' | t }}</span>
     </label>
-  {%- elsif block.settings.picker_type == 'dropdown' -%}
+  {%- elsif type == 'dropdown' -%}
     <option
       value="{{ value | escape }}"
-      {% if option.selected_value == value %}
+      {% if selectable == 'true' and option.selected_value == value %}
         selected="selected"
       {% endif %}
     >

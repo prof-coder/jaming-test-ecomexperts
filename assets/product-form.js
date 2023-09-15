@@ -83,6 +83,8 @@ if (!customElements.get('product-form')) {
             } else {
               this.cart.renderContents(response);
             }
+
+            document.dispatchEvent(new Event('cartChanged'))
           })
           .catch((e) => {
             console.error(e);
