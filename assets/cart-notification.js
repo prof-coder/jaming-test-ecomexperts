@@ -34,7 +34,7 @@ class CartNotification extends HTMLElement {
     removeTrapFocus(this.activeElement);
   }
 
-  renderContents(parsedState) {
+  renderContents(parsedState, openPopup = true) {
     this.cartItemKey = parsedState.key;
     this.getSectionsToRender().forEach((section) => {
       document.getElementById(section.id).innerHTML = this.getSectionInnerHTML(
@@ -43,8 +43,8 @@ class CartNotification extends HTMLElement {
       );
     });
 
-    if (this.header) this.header.reveal();
-    this.open();
+    if (this.header) this.header.reveal()
+    if (openPopup) this.open()
   }
 
   getSectionsToRender() {
@@ -63,7 +63,7 @@ class CartNotification extends HTMLElement {
   }
 
   getSectionInnerHTML(html, selector = '.shopify-section') {
-    return new DOMParser().parseFromString(html, 'text/html').querySelector(selector).innerHTML;
+    return new DOMParser().parseFromString(html, 'text/html').querySelector(selector)?.innerHTML || '';
   }
 
   handleBodyClick(evt) {

@@ -1264,3 +1264,135 @@ class ProductRecommendations extends HTMLElement {
 }
 
 customElements.define('product-recommendations', ProductRecommendations);
+
+/*=== [Start] Custom Cart Events ===*/
+  function getGWPID (callback) {
+    fetch(`/cart?view=check-gwp`)
+      .then((response) => response.text())
+      .then((responseText) => {
+        const html = new DOMParser().parseFromString(responseText, 'text/html')
+        const gwpSection = html?.querySelector('.js-check-gwp')
+        if (gwpSection) {
+          try {
+            const jsonData = JSON.parse(gwpSection.innerText)
+            callback(jsonData)
+          } catch (e) {
+            console.log(e)
+            callback('')
+          }
+        } else {
+          callback('')
+        }
+      })
+      .catch((e) => {
+        console.log(e)
+        callback('')
+      })
+  }
+
+  function getSectionsToRenderGWP() {
+    return [
+      {
+        id: 'main-cart-items',
+        section: document.getElementById('main-cart-items')?.dataset.id || '',
+        selector: '.js-contents',
+      },
+      {
+        id: 'cart-icon-bubble',
+        section: 'cart-icon-bubble',
+        selector: '.shopify-section',
+      },
+      {
+        id: 'cart-live-region-text',
+        section: 'cart-live-region-text',
+        selector: '.shopify-section',
+      },
+      {
+        id: 'main-cart-footer',
+        section: document.getElementById('main-cart-footer')?.dataset.id || '',
+        selector: '.js-contents',
+      }
+    ];
+  }
+
+  function getSectionInnerHTMLGWP(html, selector = '.shopify-section') {
+    return new DOMParser().parseFromString(html, 'text/html').querySelector(selector)?.innerHTML || '';
+  }
+
+  function renderContentsGWP (parsedState) {
+    getSectionsToRenderGWP().forEach((section) => {
+      const elementToReplace =
+        document.getElementById(section.id)?.querySelector(section.selector) || document.getElementById(section.id);
+      if (elementToReplace && section && section.section)
+        elementToReplace.innerHTML = getSectionInnerHTMLGWP(
+          parsedState.sections[section.section],
+          section.selector
+        );
+    });
+
+    if (parsedState.item_count == 0) {
+      document.querySelectorAll('cart-items, cart-drawer, #main-cart-footer').forEach(element => {
+        element.classList.add('is-empty')
+      })
+    }
+  }
+
+  function handleGWP () {
+    getGWPID((data) => {
+      if (data.mode && data.mode != 'none' && data.id) {
+        let formDataJson = ''
+        let formUrl = ''
+        switch (data.mode) {
+          case 'add':
+            formDataJson = {
+              id: data.id,
+              quantity: 1
+            }
+            formUrl = '/cart/add.js'
+          break;
+          case 'update':
+            formDataJson = {
+              id: data.id,
+              quantity: 1
+            }
+            formUrl = '/cart/change.js'
+          break;
+          case 'remove':
+            formDataJson = {
+              id: data.id,
+              quantity: 0
+            }
+            formUrl = '/cart/change.js'
+          break;
+        }
+
+        const formData = new FormData()
+        for ( var key in formDataJson ) {
+          formData.append(key, formDataJson[key])
+        }
+
+        formData.append(
+          'sections',
+          getSectionsToRenderGWP().map((section) => section.section)
+        );
+        formData.append('sections_url', window.location.pathname);
+
+        const config = fetchConfig('javascript')
+        config.headers['X-Requested-With'] = 'XMLHttpRequest'
+        delete config.headers['Content-Type']
+        config.body = formData
+
+        const body = JSON.stringify(formData)
+        fetch(formUrl, config)
+          .then((response) => response.text())
+          .then((response) => {
+            renderContentsGWP(JSON.parse(response))
+          })
+      }
+    })
+  }
+
+  handleGWP()
+
+  document.addEventListener('cartChanged', handleGWP)
+/*=== [End] Custom Cart Events ===*/
