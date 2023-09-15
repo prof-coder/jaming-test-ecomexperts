@@ -1213,7 +1213,7 @@ class VariantRadios extends VariantSelects {
     const fieldsets = Array.from(this.querySelectorAll('fieldset, select'));
     this.options = fieldsets.map((element) => {
       console.log('element -->')
-      console.log(element)
+      console.log(element.tagName)
       return Array.from(element.querySelectorAll('input')).find((radio) => radio.checked).value;
     });
 
