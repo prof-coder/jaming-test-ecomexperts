@@ -27,6 +27,7 @@
           {%- liquid
             assign options_type = block.settings.picker_type
             assign option_name = optiion.name | handleize
+            echo option_name
             if option_name != 'color'
               assign options_type = 'dropdown'
             endif
