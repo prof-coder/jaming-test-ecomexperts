@@ -22,46 +22,10 @@
       {{ block.shopify_attributes }}
     >
       {%- for option in product.options_with_values -%}
-        {%- liquid
-          assign options_type = block.settings.picker_type
-          assign option_name = option.name | handleize
-          if option_name != 'color'
-            assign options_type = 'dropdown'
-          endif
-        -%}
-        {%- if options_type == 'dropdown' -%}
-          <div class="product-form__input product-form__input--dropdown">
-            <label class="form__label" for="Option-{{ section.id }}-{{ forloop.index0 }}">
-              {{ option.name }}
-            </label>
-            <div class="select">
-              <select
-                id="Option-{{ section.id }}-{{ forloop.index0 }}"
-                class="select__select"
-                name="options[{{ option.name | escape }}]"
-                form="{{ product_form_id }}"
-              >
-                {%- render 'product-variant-options',
-                  product: product,
-                  option: option,
-                  block: block,
-                  type: options_type
-                -%}
-              </select>
-              {% render 'icon-caret' %}
-            </div>
-          </div>
-        {%- else -%}
-          <fieldset class="js product-form__input">
-            <legend class="form__label">{{ option.name }}</legend>
-            {%- render 'product-variant-options',
-              product: product,
-              option: option,
-              block: block,
-              type: options_type
-            -%}
-          </fieldset>
-        {%- endif -%}
+        <fieldset class="js product-form__input">
+          <legend class="form__label">{{ option.name }}</legend>
+          {% render 'product-variant-options', product: product, option: option, block: block %}
+        </fieldset>
       {%- endfor -%}
       <script type="application/json">
         {{ product.variants | json }}
@@ -90,7 +54,7 @@
               name="options[{{ option.name | escape }}]"
               form="{{ product_form_id }}"
             >
-              {% render 'product-variant-options', product: product, option: option, block: block, type: block.settings.picker_type %}
+              {% render 'product-variant-options', product: product, option: option, block: block %}
             </select>
             {% render 'icon-caret' %}
           </div>
