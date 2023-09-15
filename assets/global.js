@@ -959,7 +959,6 @@ class VariantSelects extends HTMLElement {
   }
 
   onVariantChange() {
-    console.log('onVariantChange variant -- changed')
     this.updateOptions();
     this.updateMasterId();
     this.toggleAddButton(true, '', false);
@@ -1212,8 +1211,6 @@ class VariantRadios extends VariantSelects {
   updateOptions() {
     const fieldsets = Array.from(this.querySelectorAll('fieldset, select'));
     this.options = fieldsets.map((element) => {
-      console.log('element -->')
-      console.log(element.tagName)
       switch (element.tagName) {
         case 'FIELDSET':
           return Array.from(element.querySelectorAll('input')).find((radio) => radio.checked).value;
@@ -1223,9 +1220,6 @@ class VariantRadios extends VariantSelects {
           break;
       }
     });
-
-    console.log('this.options -->')
-    console.log(this.options)
   }
 }
 
