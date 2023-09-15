@@ -956,6 +956,7 @@ class VariantSelects extends HTMLElement {
   constructor() {
     super();
     this.addEventListener('change', this.onVariantChange);
+    this.hasNoneOption = false
   }
 
   onVariantChange() {
@@ -1165,6 +1166,12 @@ class VariantSelects extends HTMLElement {
       addButtonText.textContent = window.variantStrings.addToCart;
     }
 
+    if (this.hasNoneOption) {
+      addButton.setAttribute('unselected', 'unselected');
+    } else {
+      addButton.removeAttribute('unselected');
+    }
+
     if (!modifyClass) return;
   }
 
@@ -1210,13 +1217,20 @@ class VariantRadios extends VariantSelects {
 
   updateOptions() {
     const fieldsets = Array.from(this.querySelectorAll('fieldset, select'));
+    this.hasNoneOption = false
     this.options = fieldsets.map((element) => {
       switch (element.tagName) {
         case 'FIELDSET':
           return Array.from(element.querySelectorAll('input')).find((radio) => radio.checked).value;
           break;
         case 'SELECT':
-          return element.value;
+          if (element.value == 'none') {
+            this.hasNoneOption = true
+            const firstValue = element.getAttribute('data-first-value') || ''
+            return firstValue
+          } else {
+            return element.value;
+          }
           break;
       }
     });
@@ -1277,7 +1291,7 @@ customElements.define('product-recommendations', ProductRecommendations);
             const jsonData = JSON.parse(gwpSection.innerText)
             callback(jsonData)
           } catch (e) {
-            console.log(e)
+            console.error(e)
             callback('')
           }
         } else {
@@ -1285,7 +1299,7 @@ customElements.define('product-recommendations', ProductRecommendations);
         }
       })
       .catch((e) => {
-        console.log(e)
+        console.error(e)
         callback('')
       })
   }

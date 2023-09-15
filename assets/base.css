@@ -1347,6 +1347,7 @@ button.shopify-payment-button__button--unbranded {
 /* Button - other */
 
 .button:disabled,
+.button[unselected],
 .button[aria-disabled='true'],
 .button.disabled,
 .customer button:disabled,
@@ -1355,6 +1356,11 @@ button.shopify-payment-button__button--unbranded {
 .quantity__button.disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+.button[unselected] {
+  pointer-events: none;
+  user-select: none;
 }
 
 .button--full-width {

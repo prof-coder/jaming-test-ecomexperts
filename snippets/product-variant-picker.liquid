@@ -39,8 +39,11 @@
                 id="Option-{{ section.id }}-{{ forloop.index0 }}"
                 class="select__select"
                 name="options[{{ option.name | escape }}]"
+                data-first-value="{{ option.values | first }}"
                 form="{{ product_form_id }}"
               >
+                <option value="none">Unselected</option>
+
                 {%- render 'product-variant-options',
                   product: product,
                   option: option,
